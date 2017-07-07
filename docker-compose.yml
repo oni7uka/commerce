@@ -1,0 +1,32 @@
+version: '3'
+
+volumes:
+  # We'll define a volume that will store the data from the postgres databases:
+  postgres-data:
+    driver: local
+  ruby-gems:
+    driver: local
+
+services:
+  db:
+    image: postgres
+    volumes:
+        # We'll mount the 'postgres-data' volume into the location Postgres stores it's data:
+        - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 123456
+  web:
+    build: .
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/commerce
+      - ruby-gems:/usr/local/bundle
+    stdin_open: true
+    # Enable sending signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
+    tty: true
+    ports:
+      - "3000:3000"
+    links:
+      - db

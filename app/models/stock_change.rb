@@ -1,0 +1,2 @@
+class StockChange < ApplicationRecord
+end
